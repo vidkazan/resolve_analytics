@@ -20,7 +20,7 @@ class Passive(object):
 class Project(object):
     def __init__(self, name, rate):
         self.name = "projectName"
-        self.rate = 1000
+        self.rate = 0
         self.active = []
         self.passive = []
         self.durationActive = 0
@@ -74,14 +74,19 @@ def durationSumm(proj):
         k+=1
     proj.durationPassive = res
     proj.durationAll = proj.durationActive + proj.durationPassive
-    
 
 def drawProjects(self):
     j = 0
     while j < len(projects):
         durationSumm(projects[j])
-        l = Label(bg='yellow', text=(projects[j].name + " " + str((projects[j].durationAll)/60)), justify='left')
+        j+=1
+    projects.sort(key = lambda Project: (float(Project.durationActive) / float(Project.durationAll)))
+    j=0
+    while j < len(projects):
+        l = Label(bg='#991212')
         l.place(x = 5, y = 45 + j * 30, width = (projects[j].durationAll)/60 * 5, height = 30)
+        l1 = Label(bg='#127744', text=(projects[j].name + " " + str((projects[j].durationAll)/60) + " " + str(float(projects[j].durationActive/float(projects[j].durationAll)))))
+        l1.place(x = 5, y = 45 + j * 30, width = (projects[j].durationActive)/60 * 5, height = 30)
         j+=1
 
 
@@ -166,8 +171,8 @@ projBtn = Button(gui, text = 'Projects')
 quitBtn = Button(gui, text = 'n/a')
 
 loadBtn.place(x = 5, y = 5, width = 130, height = 30)
-projBtn.place(x = 135, y = 5, width = 65, height = 30)
-quitBtn.place(x = 200, y = 5, width = 40, height = 30)
+projBtn.place(x = 135, y = 5, width = 80, height = 30)
+quitBtn.place(x = 215, y = 5, width = 40, height = 30)
 
 filePath = configFileRead()
 if(filePath):
