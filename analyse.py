@@ -59,6 +59,10 @@ def getFolderPath(self):
     filePath += "/"
     configFile = open(configFileName, "w")
     configFile.write(filePath)
+    if(filePath):
+        files = os.listdir(filePath)
+        print(files)
+        readFiles(files)
 
 def durationSumm(proj):
     res = 0
@@ -75,20 +79,24 @@ def durationSumm(proj):
     proj.durationPassive = res
     proj.durationAll = proj.durationActive + proj.durationPassive
 
-def drawProjects(self):
+def drawProjects():
     j = 0
     while j < len(projects):
         durationSumm(projects[j])
         j+=1
-    projects.sort(key = lambda Project: (float(Project.durationActive) / float(Project.durationAll)))
+    projects.sort(key = lambda Project: (float(Project.durationAll)))
     j=0
     while j < len(projects):
         l = Label(bg='#991212')
         l.place(x = 5, y = 45 + j * 30, width = (projects[j].durationAll)/60 * 5, height = 30)
-        l1 = Label(bg='#127744', text=(projects[j].name + " " + str((projects[j].durationAll)/60) + " " + str(float(projects[j].durationActive/float(projects[j].durationAll)))))
+        l1 = Label(bg='#127744')
         l1.place(x = 5, y = 45 + j * 30, width = (projects[j].durationActive)/60 * 5, height = 30)
+        l2 = Label(text=(projects[j].name + " " + str(int((projects[j].durationAll)/60)) + " " + str(round(float(projects[j].durationActive/float(projects[j].durationAll)), 3))))
+        l2.place(x = 5 + (projects[j].durationAll)/60 * 5, y = 45 + j * 30, height = 30)
         j+=1
 
+def drawProjectsBtn(self):
+        drawProjects()
 
 def spaceCatch(currentLine):
     currentLine = str(currentLine)
@@ -104,12 +112,12 @@ def contains(list, value):
     return -1
 
 def appendActivePassive(elem,currentLineTime, currentLineDuration,currentLineActiveness):
-    if(currentLineActiveness):
+    if(currentLineActiveness == 1):
                 active = Active(currentLineTime, currentLineDuration)
                 active.duration = currentLineDuration
                 active.time = currentLineTime
                 elem.active.append(active)
-    if not (currentLineActiveness):
+    if(currentLineActiveness == 0):
         passive = Passive(currentLineTime, currentLineDuration)
         passive.duration = currentLineDuration
         passive.time = currentLineTime
@@ -121,11 +129,14 @@ def lineAnalyse(currentFile):
         return -1
     else:
         currentLineSplitted = currentLine.split(' ')
+        if not (currentLineSplitted[0] or currentLineSplitted[1] or currentLineSplitted[2] or currentLineSplitted[3]):
+            print("here")
+            return
         currentLineProject = currentLineSplitted[0]
         currentLineTime = int(currentLineSplitted[1])
         currentLineDuration = int(currentLineSplitted[2])
         currentLineActiveness = (currentLineSplitted[3])
-        currentLineActiveness = currentLineActiveness[:-2]
+        currentLineActiveness = currentLineActiveness[:-1] # -2 on MI -1 on SchoolMac
         if(currentLineActiveness == "active"):
             currentLineActiveness = 1
         else:
@@ -141,6 +152,8 @@ def lineAnalyse(currentFile):
         return 1
 
 def readFile(currentFileName):
+    if not (currentFileName.endswith(".txt")):
+        return
     print(">>> scanning " + currentFileName)
     currentFile = open(filePath + currentFileName, "r")
     while 1:
@@ -178,7 +191,7 @@ filePath = configFileRead()
 if(filePath):
     files = os.listdir(filePath)
     readFiles(files)
-
+drawProjects()
 loadBtn.bind("<Button-1>",getFolderPath)
-projBtn.bind("<Button-1>",drawProjects)
+projBtn.bind("<Button-1>",drawProjectsBtn)
 gui.mainloop()
